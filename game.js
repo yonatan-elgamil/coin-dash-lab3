@@ -4,6 +4,8 @@ class CoinDash extends Phaser.Scene {
 
   create() {
     const c = COIN_DASH;
+    const select = document.getElementById('difficulty');
+    const droneSpeed = c.droneSpeed * (c.difficulties[select && select.value] || 1);
     this.score = 0;
     this.finished = false;
     this.paused = false;
@@ -25,7 +27,7 @@ class CoinDash extends Phaser.Scene {
       this.drones.add(drone);
       drone.body.setCollideWorldBounds(true).setBounce(1, 1);
       const angle = (35 + i * 105) * Math.PI / 180;
-      drone.body.setVelocity(Math.cos(angle) * c.droneSpeed, Math.sin(angle) * c.droneSpeed);
+      drone.body.setVelocity(Math.cos(angle) * droneSpeed, Math.sin(angle) * droneSpeed);
     }
     this.physics.add.overlap(this.player, this.coin, () => {
       if (this.finished) return;
@@ -92,6 +94,11 @@ class CoinDash extends Phaser.Scene {
     ).setOrigin(0.5);
   }
 }
+// Changing difficulty starts a fresh round; blur so arrow keys keep steering the player.
+document.getElementById('difficulty').addEventListener('change', (event) => {
+  event.target.blur();
+  window.coinDashGame.scene.getScene('CoinDash').scene.restart();
+});
 window.coinDashGame = new Phaser.Game({
   type: Phaser.AUTO,
   parent: 'game',
